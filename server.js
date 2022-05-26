@@ -617,7 +617,7 @@ function send_game_update(socket, game_id, message) {
                      games[game_id].player_blue.socket = first;
                     games[game_id].player_blue.username = players[first].username;
                 }
-                 else if (games[game_id].players_black.socket === "") {
+                 else if (games[game_id].player_black.socket === "") {
                     /* This player should be black */
                      console.log("Black is assigned to: "+first);
                      games[game_id].player_black.socket = first;
@@ -641,7 +641,7 @@ function send_game_update(socket, game_id, message) {
                      games[game_id].player_blue.socket = second;
                     games[game_id].player_blue.username = players[second].username;
                 }
-                 else if (games[game_id].players_black.socket === "") {
+                 else if (games[game_id].player_black.socket === "") {
                     /* This player should be black */
                      console.log("Black is assigned to: "+second);
                      games[game_id].player_black.socket = second;
