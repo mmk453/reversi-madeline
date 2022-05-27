@@ -292,10 +292,18 @@ socket.on('game_update', (payload) =>{
     $("#my_color").html('<h3 id="my_color">I am '+my_color+'</h3>');
 
 
+    let bluesum = 0;
+    let blacksum = 0;
 
     /* Animate changes to the board */
     for (let row = 0; row < 8; row++) {
        for (let column = 0; column < 8; column++) {
+           if (board[row][column]  === 'u') {
+               bluesum++;
+           }
+           else if (board[row][column] === 'b') {
+               blacksum++;
+           }
            /* Check to see if the server changed any spaces on the board */
            if(old_board[row][column] !== board[row][column]) {
                let graphic = "";
@@ -364,6 +372,9 @@ socket.on('game_update', (payload) =>{
            }
        }
     }
+    $("bluesum").html(bluesum);
+    $("blacksum").html(blacksum);
+
 old_board = board;
 })
 
@@ -392,7 +403,7 @@ socket.on('game_over', (payload) =>{
     }
 
     /* Announce with a button to the lobby */
-    let nodeA = $("div id='game over'></div>");
+    let nodeA = $("<div id='game_over'></div>");
     let nodeB = $("<h1>Game Over</h1>");
     let nodeC = $("<h2>"+payload.who_won+" won!</h2>");
     let nodeD = $("<a href='lobby.html?username="+username+"' class='btn btn-lg btn-success' role='button'>Return to lobby</a>");
@@ -413,6 +424,7 @@ $( () => {
     socket.emit('join_room', request);
 
     $("#lobbyTitle").html(username+ "'s Lobby");
+    $("#quit").html("<a href='lobby.html?username="+username+"' class='btn btn-danger' role='button'>Quit</a>");
 
     $('#chatMessage').keypress( function (e){
         let key = e.which;

@@ -666,7 +666,7 @@ function send_game_update(socket, game_id, message) {
     /* Check if the game is over */
     let count = 0;
     for (let row = 0; row < 8; row++){
-        for (let column = 0; row < 8; column++){
+        for (let column = 0; column < 8; column++){
             if (games[game_id].board[row][column] !=' ') {
                 count++;
             }
