@@ -372,8 +372,8 @@ socket.on('game_update', (payload) =>{
            }
        }
     }
-    $("bluesum").html(bluesum);
-    $("blacksum").html(blacksum);
+    $("#bluesum").html(bluesum);
+    $("#blacksum").html(blacksum);
 
 old_board = board;
 })
