@@ -213,7 +213,7 @@ socket.on('player_disconnected', (payload) => {
         domElements.hide("fade",500);
     }
 
-    let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the '+payload.room+'. (There are '+payload.count+' users in this room)</p>';
+    let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the chatroom. (There are '+payload.count+' users in this room)</p>';
     let newNode = $(newHTML);
     newNode.hide();
     $('#messages').prepend(newNode);
@@ -249,17 +249,18 @@ socket.on('send_chat_message_response', (payload) =>{
 
 
 let old_board = [
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?'],
-    ['?', '?', '?', '?', '?', '?', '?', '?']
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 ];
 
 let my_color = "";
+let interval_timer;
 
 socket.on('game_update', (payload) =>{
     if ((typeof payload == 'undefined') || (payload === null)){
@@ -278,8 +279,8 @@ socket.on('game_update', (payload) =>{
     }
 
     /* Update my color */
-    if (socket.id === payload.game.player_blue.socket) {
-        my_color = 'blue';
+    if (socket.id === payload.game.player_ue.socket) {
+        my_color = 'ue';
     }
      else if (socket.id === payload.game.player_black.socket) {
         my_color = 'black';
@@ -289,7 +290,7 @@ socket.on('game_update', (payload) =>{
        return;
     }
 
-    if( my_color === 'blue') {
+    if( my_color === 'ue') {
         $("#my_color").html('<h3 id="my_color">I am blue</h3>');
     }
     else if( my_color === 'black'){
@@ -299,7 +300,7 @@ socket.on('game_update', (payload) =>{
         $("#my_color").html('<h3 id="my_color">Error: I don\'t know what color I am</h3>');
     }
 
-    if( payload.game.whose_turn === 'blue') {
+    if( payload.game.whose_turn === 'ue') {
         $("#my_color").append('<h4>It is blue\'s turn</h4>');
     }
     else if( payload.game.whose_turn === 'black'){
@@ -310,14 +311,14 @@ socket.on('game_update', (payload) =>{
     }
 
 
-    let bluesum = 0;
+    let uesum = 0;
     let blacksum = 0;
 
     /* Animate changes to the board */
     for (let row = 0; row < 8; row++) {
        for (let column = 0; column < 8; column++) {
            if (board[row][column]  === 'u') {
-               bluesum++;
+               uesum++;
            }
            else if (board[row][column] === 'b') {
                blacksum++;
@@ -331,7 +332,7 @@ socket.on('game_update', (payload) =>{
                    altTag = "empty space";
                }
                else if((old_board[row][column] === '?') && (board[row][column] === 'u')) {
-                graphic = "empty to blue.gif";
+                graphic = "empty to ue.gif";
                 altTag = "blue token";
                }
                else if((old_board[row][column] === '?') && (board[row][column] === 'b')) {
@@ -339,7 +340,7 @@ socket.on('game_update', (payload) =>{
                 altTag = "black token";
                }
                else if((old_board[row][column] === ' ') && (board[row][column] === 'u')) {
-                graphic = "empty to blue.gif";
+                graphic = "empty to ue.gif";
                 altTag = "blue token";
                }
                else if((old_board[row][column] === ' ') && (board[row][column] === 'b')) {
@@ -347,7 +348,7 @@ socket.on('game_update', (payload) =>{
                 altTag = "black token";
                }
                else if((old_board[row][column] === 'u') && (board[row][column] === ' ')) {
-                graphic = "blue to empty.gif";
+                graphic = "ue to empty.gif";
                 altTag = "empty space";
                }
                else if((old_board[row][column] === 'b') && (board[row][column] === ' ')) {
@@ -355,11 +356,11 @@ socket.on('game_update', (payload) =>{
                 altTag = "empty space";
                }
                else if((old_board[row][column] === 'u') && (board[row][column] === 'b')) {
-                graphic = "blue to black.gif";
+                graphic = "ue to black.gif";
                 altTag = "black token";
                }
                else if((old_board[row][column] === 'b') && (board[row][column] === 'u')) {
-                graphic = "black to blue.gif";
+                graphic = "black to ue.gif";
                 altTag = "blue token";
                }
                else {
@@ -390,8 +391,36 @@ socket.on('game_update', (payload) =>{
                 }  
             }                    
         }
-    }    
-    $("#bluesum").html(bluesum);
+    }  
+    clearInterval(interval_timer)
+    interval_timer = setInterval( ((last_time) => {
+        return ( () =>{
+           let d = new Date();
+           let elapsed_m = d.getTime() - last_time;
+           let minutes = Math.floor ((elapsed_m/1000)/ 60);
+           let seconds = Math.floor((elapsed_m % (60 * 1000))/1000);
+           let total = minutes * 60 + seconds;
+           if (total > 100) {
+               total = 100;
+           }
+           $("#elapsed").css("width", total+"%").attr("aria-valuenow",total);
+           let timestring = ""+seconds;
+           timestring = timestring.padStart(2,'0');
+           timestring = minutes+":"+timestring;
+           if(total < 100){
+               $("#elapsed").html(timestring);
+           }
+           else{
+               $("#elapsed").html("Times up!");
+           }
+        })
+    })(payload.game.last_move_time)
+         ,1000);
+
+
+
+
+    $("#uesum").html(uesum);
     $("#blacksum").html(blacksum);
 
 old_board = board;
