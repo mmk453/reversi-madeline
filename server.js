@@ -581,6 +581,9 @@ socket.on('send_chat_message', (payload) => {
             game.legal_moves = calculate_legal_moves('u',game.board);
         }
 
+        let d = new Date();
+        game.last_move_time = d.getTime();
+
         send_game_update(socket, game_id, 'played a token');
         });
 });
@@ -847,7 +850,7 @@ function send_game_update(socket, game_id, message) {
     if(legal_moves === 0) {
         let winner = "Tie Game";
         if(uesum > blacksum) {
-            winner = "blue"
+            winner = "ue"
         }
         if(uesum < blacksum) {
             winner = "black"
